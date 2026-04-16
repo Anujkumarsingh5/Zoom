@@ -2,9 +2,94 @@
 @import "tw-animate-css";
 @import "shadcn/tailwind.css";
 
-@custom-variant dark (&:is(.dark *));
+@theme {
+  --background-image-hero: url("/images/hero-background.png");
 
-@theme inline {
+  --color-dark-1: #1C1F2E;
+  --color-dark-2: #161925;
+  --color-blue-1: #0E78F9;
+  --color-sky-1: #C9DDFF;
+  --color-orange-1: #FF742E;
+  --color-purple-1: #8B5CF6;
+  --color-yellow-1: #F9A90E;
+}
+
+@layer utilities {
+  .flex-center {
+    @apply flex justify-center items-center;
+  }
+
+  .flex-between {
+    @apply flex justify-between items-center;
+  }
+
+  .glassmorphism {
+    background: rgba(255, 255, 255, 0.25);
+    backdrop-filter: blur(4px);
+    -webkit-backdrop-filter: blur(4px);
+  }
+
+  .glassmorphism2 {
+    background: rgba(18, 17, 17, 0.25);
+    backdrop-filter: blur(8px);
+    -webkit-backdrop-filter: blur(8px);
+  }
+}
+
+
+
+/* clerk css overrides */
+
+.cl-internal-t4jqfq {
+  display: none;
+}
+
+/* Force all text inside the user button popover to be visible */
+.cl-userButtonPopoverCard *,
+.cl-userButtonPopoverMain *,
+.cl-userButtonPopoverActions *,
+.cl-userButtonPopoverHeaderTitle,
+.cl-userButtonPopoverHeaderSubtitle,
+.cl-userButtonPopoverActionButtonText,
+.cl-userButtonPopoverActionButtonLabel {
+  color: white !important;
+}
+
+/* Mute the subtitle (email) slightly for better hierarchy */
+.cl-userButtonPopoverHeaderSubtitle,
+.cl-userButtonPopoverHeaderSubtitle * {
+  color: #9ca3af !important;
+}
+
+/* Ensure the card itself maintains its dark background */
+.cl-userButtonPopoverCard {
+  background-color: #1c1f2e !important;
+  border: 1px solid #252a41 !important;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.5) !important;
+}
+
+/* Fix for action buttons specifically */
+.cl-userButtonPopoverActionButton {
+  transition: background-color 0.2s ease;
+}
+
+.cl-userButtonPopoverActionButton:hover {
+  background-color: #252a41 !important;
+}
+
+.cl-internal-1e3yq52 {
+  color: #a2aacc;
+}
+
+.cl-internal-mabkb0 {
+      color: #0ac5b2;
+}
+
+
+
+/* @custom-variant dark (&:is(.dark *)); */
+
+/* @theme inline {
   --color-background: var(--background);
   --color-foreground: var(--foreground);
   --font-sans: var(--font-sans);
@@ -127,4 +212,4 @@
   html {
     @apply font-sans;
   }
-}
+} */

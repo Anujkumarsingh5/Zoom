@@ -1,7 +1,8 @@
 import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
-
+import { ClerkProvider } from "@clerk/nextjs";
+    
 const geistSans = Geist({
   variable: "--font-geist-sans",
   subsets: ["latin"],
@@ -27,7 +28,67 @@ export default function RootLayout({
       lang="en"
       className={`${geistSans.variable} ${geistMono.variable} h-full antialiased`}
     >
-      <body className="min-h-full flex flex-col">{children}</body>
+      {/* Clerk Provider  customizations */}
+
+        <ClerkProvider
+        localization={{
+          signIn: {
+            start: {
+              title: 'Sign in ',
+              subtitle: 'Welcome back! Please sign in to continue',
+            },
+          },
+        }}
+        appearance={{
+          options: {
+            logoImageUrl: '/icons/yoom-logo.svg',
+            logoPlacement: 'inside',
+            socialButtonsVariant: 'iconButton',
+            unsafe_disableDevelopmentModeWarnings: true
+          },
+        variables: {
+          colorText: '#fff',
+          colorPrimary: '#0E78F9',
+          colorBackground: '#1c1f2e',
+          colorInputBackground: '#252a41',
+          colorInputText: '#fff',
+          colorInputTextPlaceholder: '#9ca3af'
+        },
+        elements: {
+          headerTitle: { color: 'white' },
+          headerSubtitle: { color: '#9ca3af' },
+          card: { backgroundColor: '#1c1f2e', border: 'none', boxShadow: 'none' },
+          socialButtonsBlockButton: {
+            backgroundColor: '#252a41',
+            border: '1px solid #252a41',
+            color: 'white',
+            justifyContent: 'center',
+            position: 'relative',
+            overflow: 'hidden'
+          },
+          socialButtonsIconButton: { backgroundColor: '#252a41', border: '1px solid #252a41', color: 'white' },
+          socialButtonsBlockButtonBadge: { display: 'none' },
+          formButtonPrimary: { backgroundColor: '#0E78F9', color: 'white', textTransform: 'none' },
+          footerActionText: { color: '#9ca3af' },
+          footerActionLink: { color: '#0E78F9' },
+          formFieldLabel: { color: '#d1d5db' },
+          formFieldInput: {
+            backgroundColor: '#252a41',
+            border: '1px solid #252a41',
+            color: 'white',
+            '&::placeholder': {
+              color: '#b8c1d1',
+              opacity: 1
+            }
+          },
+          dividerText: { color: '#9ca3af' },
+          dividerLine: { backgroundColor: '#374151' },
+          logoBox: { height: '2.5rem', marginBottom: '1.5rem' }
+        }
+      }}>
+
+        <body className="min-h-full flex flex-col bg-[#161925]">{children}</body>
+      </ClerkProvider>
     </html>
   );
 }
