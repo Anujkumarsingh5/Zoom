@@ -36,6 +36,36 @@
   }
 }
 
+/* Reposition Sonner's close button to top-right inside the toast */
+[data-sonner-toast] [data-close-button] {
+  position: absolute !important;
+  top: 8px !important;
+  right: 8px !important;
+  left: unset !important;
+  transform: none !important;
+  width: 20px !important;
+  height: 20px !important;
+  border-radius: 6px !important;
+  background: rgba(255, 255, 255, 0.08) !important;
+  border: 1px solid rgba(255, 255, 255, 0.12) !important;
+  color: rgba(255, 255, 255, 0.5) !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  transition: all 0.2s ease !important;
+}
+
+[data-sonner-toast] [data-close-button]:hover {
+  background: rgba(255, 255, 255, 0.15) !important;
+  color: rgba(255, 255, 255, 0.9) !important;
+  border-color: rgba(255, 255, 255, 0.25) !important;
+}
+
+[data-sonner-toast] [data-close-button] svg {
+  width: 10px !important;
+  height: 10px !important;
+}
+
 
 
 /* clerk css overrides */
