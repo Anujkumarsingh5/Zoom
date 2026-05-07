@@ -7,19 +7,37 @@ const MeetingSetup = ({setIsSetupComplete}:{setIsSetupComplete: (value:boolean)=
     const call = useCall()
 
     if(!call){
-        throw new Error('usecall must be used within StreamCall component')
+        throw new Error('usecall must be used within StreamCall component provider')
     }
 
+    // toggle mic and cam based on the isMicCamToggleOn state
     useEffect(()=>{
         if(isMicCamToggleOn){
-            call?.camera.disable();
+            call?.camera.disable(); 
             call?.microphone.disable()
         }
         else{
             call?.camera.enable();
             call?.microphone.enable();
         }
-    })
+    }, [isMicCamToggleOn])
+
+    // Stop camera/mic when user navigates away (e.g. presses back)
+    useEffect(()=>{
+        return () => {
+            call?.camera.disable()
+            call?.microphone.disable()
+
+            // Force-stop all browser media tracks to release camera/mic hardware
+            document.querySelectorAll('video, audio').forEach((el) => {
+                const stream = (el as HTMLMediaElement).srcObject as MediaStream
+                if (stream) {
+                    stream.getTracks().forEach(track => track.stop())
+                    ;(el as HTMLMediaElement).srcObject = null
+                }
+            })
+        }
+    }, [])
   return (
     <div className='flex h-screen w-full flex-col items-center gap-3 text-white'>
      <h1 className='text-2xl font-bold'>Setup </h1>   

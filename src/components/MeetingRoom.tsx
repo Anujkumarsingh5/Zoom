@@ -6,6 +6,7 @@ import {
   CallStatsButton,
   PaginatedGridLayout,
   SpeakerLayout,
+  useCall,
   useCallStateHooks,
 } from "@stream-io/video-react-sdk";
 import { useState } from "react";
@@ -18,10 +19,11 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { Layout, Users } from "lucide-react";
-import { useSearchParams } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import EndCallButton from "./EndCallButton";
 import Loader from "./Loader";
 
+// define the type of call layout we want to support in our meeting room
 type CallLayoutType = "grid" | "speaker-left" | "speaker-right";
 
 const MeetingRoom = () => {
@@ -30,13 +32,15 @@ const MeetingRoom = () => {
   const [layout, setLayout] = useState<CallLayoutType>("speaker-left");
 
   const [showParticipants, setShowParticipants] = useState(false);
+  const router = useRouter();
 
-  const { useCallCallingState } = useCallStateHooks()
-  const callingState = useCallCallingState()
+  const call = useCall();
+  const { useCallCallingState } = useCallStateHooks();
+  const callingState = useCallCallingState();
 
-  if(callingState !== CallingState.JOINED) return <Loader />
+  if (callingState !== CallingState.JOINED) return <Loader />;
 
-//   call layout component based on the selected layout
+  //   call layout component based on the selected layout
   const CallLayout = () => {
     switch (layout) {
       case "grid":
@@ -64,7 +68,23 @@ const MeetingRoom = () => {
       </div>
 
       <div className="fixed bottom-0 flex w-full items-center justify-center gap-5 flex-wrap">
-        <CallControls />
+        <CallControls
+          onLeave={async () => {
+            await call?.camera.disable();
+            await call?.microphone.disable();
+
+            // Force-stop all browser media tracks to release camera/mic hardware
+            document.querySelectorAll("video, audio").forEach((el) => {
+              const stream = (el as HTMLMediaElement).srcObject as MediaStream;
+              if (stream) {
+                stream.getTracks().forEach((track) => track.stop());
+                (el as HTMLMediaElement).srcObject = null;
+              }
+            });
+
+            router.push("/");
+          }}
+        />
 
         <DropdownMenu>
           <div className="flex items-center">

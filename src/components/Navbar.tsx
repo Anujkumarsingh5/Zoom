@@ -2,10 +2,10 @@
 
 import Image from 'next/image'
 import Link from 'next/link'
-import React from 'react'
 import MobileNav from './MobileNav'
 import { SignInButton, UserButton, useAuth } from '@clerk/nextjs'
 
+// this comonent show the navigation bar.
 const Navbar = () => {
   const { isLoaded, isSignedIn } = useAuth()
   
@@ -41,4 +41,4 @@ const Navbar = () => {
   )
 }
 
-export default Navbar
+export default Navbar

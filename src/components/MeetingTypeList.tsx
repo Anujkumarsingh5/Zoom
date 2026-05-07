@@ -1,13 +1,15 @@
 "use client";
+
 import HomeCard from "@/components/HomeCard";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
 import MeetingModel from "./MeetingModel";
 import { useUser } from "@clerk/nextjs";
 import { Call, useStreamVideoClient } from "@stream-io/video-react-sdk";
-import { toast } from "sonner"
+import { toast } from "sonner";
 import { Textarea } from "./ui/textarea";
 import DatePicker from "react-datepicker";
+import { Input } from "./ui/input";
 
 const MeetingTypeList = () => {
   const router = useRouter();
@@ -15,57 +17,62 @@ const MeetingTypeList = () => {
     "isScheduleMeeting" | "isJoiningMeeting" | "isInstantMeeting" | undefined
   >();
 
-  const { user} = useUser();
-  const client = useStreamVideoClient()
+  const { user } = useUser();
+  const client = useStreamVideoClient();
   const [values, setValues] = useState({
     dateTime: new Date(),
-    description: '',
-    link: ''
-  })
+    description: "",
+    link: "",
+  });
 
-  const [callDetails, setCallDetails] = useState<Call>()
-  
+  const [callDetails, setCallDetails] = useState<Call>();
+
   const createMeeting = async () => {
-    // API call to create meeting
-    if(!client || !user) return;
+    // API call to create meeting via Stream Video API
+    if (!client || !user) return;
 
     try {
-        if(!values.dateTime) {
-          toast.warning("Please select a date and time for the meeting.", { position: "top-right" })
-          return;
-        }
-
-      const id = crypto.randomUUID()
-      const call = client.call('default', id)
-
-      if(!call) throw new Error('Failed to create call')
-      const startsAt = values.dateTime.toISOString() || new Date(Date.now()).toISOString()
-    const description = values.description || 'Instant meeting'
-
-    await call.getOrCreate({
-      data: {
-        starts_at: startsAt,
-        custom: {
-          description
-        }
+      if (!values.dateTime) {
+        toast.warning("Please select a date and time for the meeting.", {
+          position: "top-right",
+        });
+        return;
       }
-    })
 
-    setCallDetails(call)
+      const id = crypto.randomUUID();
+      const call = client.call("default", id);
 
-    if(!values.description){
-      router.push(`/meeting/${call.id}`)
-    }
+      if (!call) throw new Error("Failed to create call");
+      const startsAt =
+        values.dateTime.toISOString() || new Date(Date.now()).toISOString();
+      const description = values.description || "Instant meeting";
 
-    toast.success("Meeting created successfully!", { position: "top-right" })
+      await call.getOrCreate({
+        data: {
+          starts_at: startsAt,
+          custom: {
+            description,
+          },
+        },
+      });
 
+      setCallDetails(call);
+
+      if (!values.description) {
+        // if description is empty, its an instant meeting, so we can join the meeting immediately
+        router.push(`/meeting/${call.id}`);
+      }
+
+      toast.success("Meeting created successfully!", { position: "top-right" });
     } catch (error) {
-      console.log(error)
-      toast.error("Failed to create meeting. Please try again.", { position: "top-right" })
+      console.log(error);
+      toast.error("Failed to create meeting. Please try again.", {
+        position: "top-right",
+      });
     }
   };
-
-  const meetingLink = `${process.env.NEXT_PUBLIC_BASE_URL}/meeting/${callDetails?.id}`
+// it would be better to get the base url from environmental variables instead of hardcoding.
+  const meetingLink = `${process.env.NEXT_PUBLIC_BASE_URL}/meeting/${callDetails?.id}`;
 
   return (
     <section className="grid grid-cols-1 gap-5 md:grid-cols-2 xl:grid-cols-4">
@@ -76,7 +83,7 @@ const MeetingTypeList = () => {
         className="bg-orange-1"
         handleClick={() => setMeetingState("isInstantMeeting")}
       />
-      <HomeCard
+      <HomeCard 
         img="/icons/join-meeting.svg"
         title="Join Meeting"
         description="via invitation link"
@@ -100,50 +107,83 @@ const MeetingTypeList = () => {
 
       {!callDetails ? (
         <MeetingModel
-        isOpen={meetingState === "isScheduleMeeting"}
-        onClose={() => setMeetingState(undefined)}
-        title="Create Meeting"
-        // className="text-center"
-        // buttonText="Schedule Meeting"
-        handleClick={createMeeting}
-      >
-        <div className="flex flex-col gap-2.5">
-          <label className="text-base text-normal leading-[22px] text-sky-2">Add a description</label>
-          <Textarea className="border-none bg-dark-2 focus-visible:ring-0 focus-visible:ring-offset-0" onChange={(e)=>{
-            setValues({...values, description: e.target.value})
-          }}/>
-          
-        </div>
+          isOpen={meetingState === "isScheduleMeeting"}
+          onClose={() => setMeetingState(undefined)}
+          title="Create Meeting"
+          // className="text-center"
+          // buttonText="Schedule Meeting"
+          handleClick={createMeeting}
+        >
+          <div className="flex flex-col gap-2.5">
+            <label className="text-base text-normal leading-[22px] text-sky-2">
+              Add a description
+            </label>
+            <Textarea
+              className="border-none bg-dark-2 focus-visible:ring-0 focus-visible:ring-offset-0"
+              onChange={(e) => {
+                setValues({ ...values, description: e.target.value });
+              }}
+            />
+          </div>
 
-       <div className="flex flex-col gap-2.5">
-          <label className="text-base text-normal leading-[22px] text-sky-2">Select Date and Time</label>
-         <DatePicker selected={values.dateTime} onChange={(date: Date | null)=>setValues({...values, dateTime: date!})}
-          showTimeSelect
-          timeFormat="HH:mm"
-          timeIntervals={15}
-          timeCaption="time"
-          dateFormat="MMMM d, yyyy h:mm aa"
-          className="w-full rounded bg-dark-2 p-2 focus:outline-none"/>
-
-        </div>
-      </MeetingModel>
+          <div className="flex flex-col gap-2.5">
+            <label className="text-base text-normal leading-[22px] text-sky-2">
+              Select Date and Time
+            </label>
+            <DatePicker
+              selected={values.dateTime}
+              onChange={(date: Date | null) =>
+                setValues({ ...values, dateTime: date! })
+              }
+              showTimeSelect
+              timeFormat="HH:mm"
+              timeIntervals={15}
+              timeCaption="time"
+              dateFormat="MMMM d, yyyy h:mm aa"
+              className="w-full rounded bg-dark-2 p-2 focus:outline-none "
+            />
+          </div>
+        </MeetingModel>
       ) : (
         <MeetingModel
-        isOpen={meetingState === "isScheduleMeeting"}
-        onClose={() => setMeetingState(undefined)}
-        title="Meeting Created"
-        className="text-center"
-        // buttonText="Start Meeting"
-        handleClick={()=>{
-          // navigator.clipboard.writeText
-          toast.success( 'Link copied', {position:"top-right"})
-        }}
-        image="/icons/checked.svg"
-        buttonIcon="/icons/copy.svg"
-        buttonText="Copy Meeting Link"
-      />
+          isOpen={meetingState === "isScheduleMeeting"}
+          onClose={() => setMeetingState(undefined)}
+          title="Meeting Created"
+          className="text-center"
+          // buttonText="Start Meeting"
+          handleClick={() => {
+            // navigator.clipboard.writeText
+            toast.success("Link copied", { position: "top-right" });
+          }}
+          image="/icons/checked.svg"
+          buttonIcon="/icons/copy.svg"
+          buttonText="Copy Meeting Link"
+        />
       )}
-      
+
+      <MeetingModel
+        isOpen={meetingState === "isJoiningMeeting"}
+        onClose={() => setMeetingState(undefined)}
+        title="Type the link here"
+        className="text-center"
+        buttonText="Join Meeting"
+        handleClick={() => router.push(values.link)}
+      >
+        <Input
+          placeholder="Meeting link"
+          onChange={(e) => setValues({ ...values, link: e.target.value })}
+          className="border-none bg-dark-3 focus-visible:ring-0 focus-visible:ring-offset-0"
+        />
+      </MeetingModel>
+
+      <MeetingModel
+        isOpen={meetingState === "isInstantMeeting"}
+        onClose={() => setMeetingState(undefined)}
+        title="Start an Instant Meeting"
+        className="text-center"
+        buttonText="Start Meeting"
+        handleClick={createMeeting}
+      />
     </section>
   );
 };

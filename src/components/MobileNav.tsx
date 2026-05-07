@@ -1,13 +1,9 @@
 "use client";
-import React from "react";
+     
 import {
   Sheet,
   SheetClose,
   SheetContent,
-  SheetDescription,
-  SheetFooter,
-  SheetHeader,
-  SheetTitle,
   SheetTrigger,
 } from "@/components/ui/sheet";
 import Image from "next/image";
@@ -16,13 +12,14 @@ import { sidebarLinks } from "../../constants";
 import { usePathname } from "next/navigation";
 import { cn } from "@/lib/utils";
 
+// this componet is used to show the navigation on the mobile screen.
 const MobileNav = () => {
   const pathname = usePathname();
   return (
     <section className="w-full max-w-[264px]">
       <Sheet>
         <SheetTrigger>
-          <Image
+          <Image   
             src="/icons/hamburger.svg"
             width={36}
             height={36}
@@ -40,7 +37,7 @@ const MobileNav = () => {
               className="max-sm:size-10"
             />
 
-            <p className="text-[26px] font-extrabold text-white ">Zoom</p>
+            <p className="text-[26px] font-extrabold text-white ">Yoom</p>
           </Link>
 
           {/* for other links like meetings, home, recordingds.. */}
@@ -50,7 +47,7 @@ const MobileNav = () => {
                 {sidebarLinks.map((link) => {
                   const isActive =
                     pathname === link.route ||
-                    (link.route !== "/" && pathname.startsWith(link.route));
+                    (link.route !== "/" && pathname.startsWith(link.route));  
 
                   return (
                     <Link
@@ -68,11 +65,11 @@ const MobileNav = () => {
                         height={20}
                         style={{ width: "24px", height: "24px" }}
                       />
-                      <p className="font-semibold ">{link.label}</p>
+                      <p className="font-semibold ">{link.label}</p>      
                     </Link>
                   );
                 })}
-              </section>
+              </section>   
             </SheetClose>
           </div>
         </SheetContent>
